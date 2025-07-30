@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF‑8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Single‑File To‑Do List</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font:16px Arial, sans-serif; background:#f4f4f4; color:#333; padding:20px; }
+    h1 { text-align:center; margin-bottom:20px; }
+    form { display:flex; justify-content:center; gap:10px; margin-bottom:20px; }
+    input[type="text"] { flex:1; padding:8px; font-size:1rem; }
+    button { padding:8px 12px; background:#0070f3; color:#fff; border:none; cursor:pointer; }
+    button:hover { background:#005bb5; }
+    ul { list-style:none; max-width:600px; margin:0 auto; padding:0; }
+    li { background:#fff; padding:10px; margin-bottom:8px; border-radius:4px;
+         display:flex; justify-content:space-between; align-items:center; }
+    li .text { cursor:pointer; flex:1; }
+    li .text.completed { text-decoration:line-through; color:#888; }
+    li button.delete { background:transparent; border:none; color:#e00; font-size:1.2rem; cursor:pointer; }
+    li button.edit { background:transparent; border:none; color:#0070f3; font-size:1.2rem; margin-right:8px; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <h1>My To‑Do List</h1>
+  <form id="todo-form">
+    <input type="text" id="todo-input" placeholder="Add a new task…" required>
+    <button type="submit">Add</button>
+  </form>
+  <ul id="task-list"></ul>
+
+<script>
+(function(){
+  const form = document.getElementById('todo-form');
+  const inp = document.getElementById('todo-input');
+  const list = document.getElementById('task-list');
+  let todos = JSON.parse(localStorage.getItem('todos')||'[]');
+
+  function save() { localStorage.setItem('todos', JSON.stringify(todos)); }
+
+  function render(){
+    list.innerHTML = '';
+    todos.forEach((t,i)=> {
+      const li = document.createElement('li');
+      li.innerHTML = \`
+        <span class="text \${t.completed?'completed':''}">\${t.text}</span>
+        <div>
+          <button class="edit">✎</button>
+          <button class="delete">✕</button>
+        </div>\`;
+      li.querySelector('.text').addEventListener('click',()=> {
+        t.completed = !t.completed; save(); render();
+      });
+      li.querySelector('.delete').addEventListener('click',()=> {
+        todos.splice(i,1); save(); render();
+      });
+      li.querySelector('.edit').addEventListener('click',()=> {
+        const nt = prompt('Edit task:', t.text);
+        if(nt && nt.trim()){ t.text=nt.trim(); save(); render(); }
+      });
+      list.appendChild(li);
+    });
+  }
+
+  form.addEventListener('submit',e=> {
+    e.preventDefault();
+    const v = inp.value.trim();
+    if(v){ todos.push({ text:v, completed:false }); inp.value=''; save(); render(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
