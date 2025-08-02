@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Matrix Multiplication</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+    }
+    h2 {
+      color: #333;
+    }
+    input {
+      width: 50px;
+      margin: 2px;
+    }
+    .matrix {
+      margin-bottom: 20px;
+    }
+    button {
+      margin: 10px 0;
+      padding: 5px 10px;
+    }
+    .result {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Matrix Multiplication using Dynamic Memory</h2>
+
+  <div>
+    <label>Rows (A): <input type="number" id="rowsA" min="1"></label>
+    <label>Cols (A) / Rows (B): <input type="number" id="colsA" min="1"></label>
+    <label>Cols (B): <input type="number" id="colsB" min="1"></label>
+    <button onclick="createMatrices()">Create Matrices</button>
+  </div>
+
+  <div id="matrixInputs"></div>
+  <button onclick="multiplyMatrices()">Multiply</button>
+
+  <div class="result">
+    <h3>Result Matrix (C):</h3>
+    <div id="resultMatrix"></div>
+  </div>
+
+  <script>
+    let rowsA, colsA, colsB;
+    let matrixA = [], matrixB = [];
+
+    function createMatrix(rows, cols) {
+      let matrix = [];
+      for (let i = 0; i < rows; i++) {
+        matrix[i] = new Array(cols).fill(0);
+      }
+      return matrix;
+    }
+
+    function inputMatrix(matrixId, rows, cols, label) {
+      let html = <div class="matrix"><h3>${label}</h3>;
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          html += <input type="number" id="${matrixId}_${i}_${j}" />;
+        }
+        html += '<br>';
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function displayMatrix(matrix, containerId) {
+      let html = '';
+      for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[0].length; j++) {
+          html += <input value="${matrix[i][j]}" disabled />;
+        }
+        html += '<br>';
+      }
+      document.getElementById(containerId).innerHTML = html;
+    }
+
+    function createMatrices() {
+      rowsA = parseInt(document.getElementById('rowsA').value);
+      colsA = parseInt(document.getElementById('colsA').value);
+      colsB = parseInt(document.getElementById('colsB').value);
+
+      if (!rowsA || !colsA || !colsB) {
+        alert("Please enter valid sizes.");
+        return;
+      }
+
+      let html = '';
+      html += inputMatrix('A', rowsA, colsA, 'Matrix A');
+      html += inputMatrix('B', colsA, colsB, 'Matrix B');
+      document.getElementById('matrixInputs').innerHTML = html;
+    }
+
+    function multiplyMatrices() {
+      matrixA = createMatrix(rowsA, colsA);
+      matrixB = createMatrix(colsA, colsB);
+
+      for (let i = 0; i < rowsA; i++) {
+        for (let j = 0; j < colsA; j++) {
+          matrixA[i][j] = parseInt(document.getElementById(A_${i}_${j}).value) || 0;
+        }
+      }
+
+      for (let i = 0; i < colsA; i++) {
+        for (let j = 0; j < colsB; j++) {
+          matrixB[i][j] = parseInt(document.getElementById(B_${i}_${j}).value) || 0;
+        }
+      }
+
+      // Multiply
+      let result = createMatrix(rowsA, colsB);
+      for (let i = 0; i < rowsA; i++) {
+        for (let j = 0; j < colsB; j++) {
+          for (let k = 0; k < colsA; k++) {
+            result[i][j] += matrixA[i][k] * matrixB[k][j];
+          }
+        }
+      }
+
+      displayMatrix(result, 'resultMatrix');
+    }
+  </script>
+
+</body>
+</html>

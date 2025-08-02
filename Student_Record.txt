@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Records System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+    h2, h3 {
+      color: #333;
+    }
+    .student-form {
+      background-color: #fff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input[type="text"],
+    input[type="number"] {
+      width: 95%;
+      padding: 6px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .output {
+      background-color: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 8px;
+      border: 1px solid #888;
+      text-align: center;
+    }
+    th {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Student Records System</h2>
+
+<div id="studentForms"></div>
+<button onclick="processStudents()">Submit & Show Records</button>
+
+<div class="output" id="output"></div>
+
+<script>
+  const totalStudents = 5;
+  const studentData = [];
+
+  const container = document.getElementById("studentForms");
+
+  for (let i = 0; i < totalStudents; i++) {
+    let fields = `
+      <div class="student-form">
+        <h3>Student ${i + 1}</h3>
+        <label>ID: <input type="number" id="id${i}" required></label>
+        <label>Name: <input type="text" id="name${i}" required></label>
+        <label>Marks (5 subjects):</label>
+    `;
+    for (let j = 0; j < 5; j++) {
+      fields += <input type="number" id="marks${i}_${j}" min="0" max="100" placeholder="Mark ${j + 1}" required><br>;
+    }
+    fields += </div>;
+    container.innerHTML += fields;
+  }
+
+  function processStudents() {
+    studentData.length = 0;
+
+    for (let i = 0; i < totalStudents; i++) {
+      const id = parseInt(document.getElementById(id${i}).value);
+      const name = document.getElementById(name${i}).value;
+      const marks = [];
+
+      for (let j = 0; j < 5; j++) {
+        const mark = parseFloat(document.getElementById(marks${i}_${j}).value);
+        if (isNaN(mark) || mark < 0 || mark > 100) {
+          alert(Enter valid mark for Student ${i + 1}, Subject ${j + 1});
+          return;
+        }
+        marks.push(mark);
+      }
+
+      const average = marks.reduce((a, b) => a + b, 0) / marks.length;
+
+      studentData.push({ id, name, marks, average });
+    }
+
+    displayResults();
+  }
+
+  function displayResults() {
+    let resultHTML = `<h3>All Student Records</h3><table>
+      <tr>
+        <th>ID</th><th>Name</th><th>Marks</th><th>Average</th>
+      </tr>`;
+
+    let topper = studentData[0];
+    studentData.forEach(student => {
+      resultHTML += `<tr>
+        <td>${student.id}</td>
+        <td>${student.name}</td>
+        <td>${student.marks.join(", ")}</td>
+        <td>${student.average.toFixed(2)}</td>
+      </tr>`;
+      if (student.average > topper.average) {
+        topper = student;
+      }
+    });
+
+    resultHTML += `</table><h3>Topper</h3>
+      <p><strong>ID:</strong> ${topper.id}</p>
+      <p><strong>Name:</strong> ${topper.name}</p>
+      <p><strong>Average:</strong> ${topper.average.toFixed(2)}</p>`;
+
+    document.getElementById("output").innerHTML = resultHTML;
+  }
+</script>
+
+</body>
+</html>
